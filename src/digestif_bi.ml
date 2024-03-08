@@ -49,34 +49,52 @@ external swap32 : int32 -> int32 = "%bswap_int32"
 external swap64 : int64 -> int64 = "%bswap_int64"
 external swapnat : nativeint -> nativeint = "%bswap_native"
 
-let cpu_to_be32 s i v =
-  if Sys.big_endian then unsafe_set_32 s i v else unsafe_set_32 s i (swap32 v)
-
-let cpu_to_le32 s i v =
-  if Sys.big_endian then unsafe_set_32 s i (swap32 v) else unsafe_set_32 s i v
-
-let cpu_to_be64 s i v =
-  if Sys.big_endian then unsafe_set_64 s i v else unsafe_set_64 s i (swap64 v)
-
-let cpu_to_le64 s i v =
-  if Sys.big_endian then unsafe_set_64 s i (swap64 v) else unsafe_set_64 s i v
-
-let be32_to_cpu s i =
-  if Sys.big_endian then unsafe_get_32 s i else swap32 @@ unsafe_get_32 s i
-
-let le32_to_cpu s i =
-  if Sys.big_endian then swap32 @@ unsafe_get_32 s i else unsafe_get_32 s i
-
-let be64_to_cpu s i =
-  if Sys.big_endian then unsafe_get_64 s i else swap64 @@ unsafe_get_64 s i
-
-let le64_to_cpu s i =
-  if Sys.big_endian then swap64 @@ unsafe_get_64 s i else unsafe_get_64 s i
-
-let benat_to_cpu s i =
-  if Sys.big_endian then unsafe_get_nat s i else swapnat @@ unsafe_get_nat s i
-
-let cpu_to_benat s i v =
+let cpu_to_be32 =
   if Sys.big_endian
-  then unsafe_set_nat s i v
-  else unsafe_set_nat s i (swapnat v)
+  then unsafe_set_32
+  else fun s i v -> unsafe_set_32 s i (swap32 v)
+
+let cpu_to_le32 =
+  if Sys.big_endian
+  then fun s i v -> unsafe_set_32 s i (swap32 v)
+  else unsafe_set_32
+
+let cpu_to_be64 =
+  if Sys.big_endian
+  then unsafe_set_64
+  else fun s i v -> unsafe_set_64 s i (swap64 v)
+
+let cpu_to_le64 =
+  if Sys.big_endian
+  then fun s i v -> unsafe_set_64 s i (swap64 v)
+  else unsafe_set_64
+
+let be32_to_cpu =
+  if Sys.big_endian
+  then unsafe_get_32
+  else fun s i -> swap32 @@ unsafe_get_32 s i
+
+let le32_to_cpu =
+  if Sys.big_endian
+  then fun s i -> swap32 @@ unsafe_get_32 s i
+  else unsafe_get_32
+
+let be64_to_cpu =
+  if Sys.big_endian
+  then unsafe_get_64
+  else fun s i -> swap64 @@ unsafe_get_64 s i
+
+let le64_to_cpu =
+  if Sys.big_endian
+  then fun s i -> swap64 @@ unsafe_get_64 s i
+  else unsafe_get_64
+
+let benat_to_cpu =
+  if Sys.big_endian
+  then unsafe_get_nat
+  else fun s i -> swapnat @@ unsafe_get_nat s i
+
+let cpu_to_benat =
+  if Sys.big_endian
+  then unsafe_set_nat
+  else fun s i v -> unsafe_set_nat s i (swapnat v)
